@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presensi Online - PASKIBRA YBAC</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg: #060606;
+            --panel: #111111;
+            --panel-2: #1b1b1b;
+            --text: #f5f5f5;
+            --muted: #9ca3af;
+            --accent: #fbbf24;
+            --accent-2: #ef4444;
+            --border: rgba(255,255,255,0.12);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(251, 191, 36, 0.16), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(239, 68, 68, 0.16), transparent 32%),
+                var(--bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .gold-glow {
+            box-shadow: 0 0 0 1px var(--border), 0 18px 45px rgba(0,0,0,0.45), 0 0 30px rgba(251, 191, 36, 0.14);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-style {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            border: 1px solid var(--border);
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .input-style:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.16);
+            outline: none;
+        }
+
+        .btn-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(251, 191, 36, 0.22);
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 md:p-8 gold-glow relative overflow-hidden">
+        
+        <!-- Aksen Garis Merah Putih Atas -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 flex">
+            <div class="w-1/2 bg-red-600"></div>
+            <div class="w-1/2 bg-white"></div>
+        </div>
+
+        <!-- Header / Logo -->
+        <div class="text-center mt-2 mb-6">
+            <div class="relative inline-block">
+                <img src="c:\Users\HGP\Downloads\Design By ADAM HERMANSYAH\Design By ADAM HERMANSYAH.png" alt="Logo Paskibra YBAC" class="w-24 h-24 mx-auto mb-3 object-contain rounded-full border-2 border-amber-500/30 p-1 bg-black shadow-[0_0_25px_rgba(251,191,36,0.2)]" onerror="this.src='https://via.placeholder.com/100?text=YBAC'">
+                <div class="absolute inset-0 rounded-full border border-amber-400/20 animate-pulse"></div>
+            </div>
+            <h1 class="text-xl font-bold tracking-[0.25em] text-amber-400 uppercase">PASKIBRA YBAC</h1>
+            <p class="text-xs text-zinc-400 font-medium tracking-[0.25em] mt-1">YAYASAN PENDIDIKAN BUDI ARTI</p>
+            <div class="h-0.5 w-20 bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 mx-auto mt-3 rounded-full"></div>
+        </div>
+
+        <!-- Form Absensi -->
+        <form id="attendanceForm" onsubmit="sendToWhatsApp(event)" class="space-y-4">
+            
+            <!-- Nama Lengkap -->
+            <div>
+                <label for="nama" class="block text-xs font-semibold text-zinc-300 uppercase mb-1">Nama Lengkap</label>
+                <input type="text" id="nama" required placeholder="Masukkan nama lengkap..."
+                    class="input-style w-full rounded-xl px-4 py-2.5 text-sm">
+            </div>
+
+            <!-- Kelas / Angkatan -->
+            <div>
+                <label for="kelas" class="block text-xs font-semibold text-zinc-300 uppercase mb-1">Kelas / Angkatan</label>
+                <input type="text" id="kelas" required placeholder="Contoh: X IPA 1 / Angkatan 15"
+                    class="input-style w-full rounded-xl px-4 py-2.5 text-sm">
+            </div>
+
+            <!-- Status Kehadiran -->
+            <div>
+                <label for="status" class="block text-xs font-semibold text-zinc-300 uppercase mb-1">Status Kehadiran</label>
+                <select id="status" required
+                    class="input-style w-full rounded-xl px-4 py-2.5 text-sm">
+                    <option value="" disabled selected>-- Pilih Status --</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                </select>
+            </div>
+
+            <!-- Keterangan / Catatan -->
+            <div>
+                <label for="keterangan" class="block text-xs font-semibold text-zinc-300 uppercase mb-1">Keterangan (Opsional)</label>
+                <textarea id="keterangan" rows="2" placeholder="Catatan/alasan jika izin atau sakit..."
+                    class="input-style w-full rounded-xl px-4 py-2.5 text-sm"></textarea>
+            </div>
+
+            <!-- Tombol Kirim -->
+            <button type="submit" 
+                class="btn-hover w-full mt-2 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+                Kirim Absensi Ke WhatsApp
+            </button>
+        </form>
+
+        <p class="text-center text-[10px] text-zinc-500 mt-6">
+            &copy; PASKIBRA YBAC - Sistem Absensi Otomatis
+        </p>
+    </div>
+
+    <script>
+        function sendToWhatsApp(event) {
+            event.preventDefault();
+
+            // Ambil data input
+            const nama = document.getElementById('nama').value.trim();
+            const kelas = document.getElementById('kelas').value.trim();
+            const status = document.getElementById('status').value;
+            const keterangan = document.getElementById('keterangan').value.trim() || '-';
+
+            // Format tanggal & waktu lokal
+            const sekarang = new Date();
+            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const tanggalStr = sekarang.toLocaleDateString('id-ID', opsiTanggal);
+            const jamStr = sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+            // Nomor Tujuan (Format Internasional: 6283874795123)
+            const targetPhone = "6283874795123";
+
+            // Format Pesan WhatsApp
+            const statusEmoji = status === 'Hadir' ? '✅' : status === 'Izin' ? '📝' : '🩺';
+            const statusLabel = status === 'Hadir' ? 'HADIR' : status === 'Izin' ? 'IZIN' : 'SAKIT';
+            const message = 
+`*ABSENSI PASKIBRA YBAC*
+=======================================
+📅 *Hari/Tanggal:* ${tanggalStr}
+⏰ *Waktu:* ${jamStr}
+
+👤 *Nama Lengkap:* ${nama}
+🏫 *Kelas/Angkatan:* ${kelas}
+${statusEmoji} *Status Kehadiran:* ${statusLabel}
+📝 *Keterangan:* ${keterangan}
+
+📌 *Ringkasan:*
+- Nama: ${nama}
+- Kelas/Angkatan: ${kelas}
+- Status: ${status}
+- Catatan: ${keterangan}
+- Waktu presensi: ${jamStr}
+
+=======================================
+_Dikirim otomatis melalui sistem presensi online Paskibra YBAC._`;
+
+            // Redirect ke WhatsApp
+            const encodedMessage = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
+
+            window.open(waUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
