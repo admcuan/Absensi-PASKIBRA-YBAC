@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presensi Online - PASKIBRA YBAC</title>
+    <title>Absensi Online - PASKIBRA YBAC</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -80,6 +80,33 @@
             position: relative;
             z-index: 10;
         }
+
+        .audio-player {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 30;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .audio-player audio {
+            width: 220px;
+        }
+
+        @media (max-width: 640px) {
+            .audio-player {
+                right: 0.75rem;
+                left: 0.75rem;
+            }
+
+            .audio-player audio {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex items-center justify-center p-4">
@@ -90,6 +117,13 @@
         </video>
     </div>
     <div class="video-overlay"></div>
+
+    <div class="audio-player">
+        <audio id="anthemAudio" controls autoplay loop preload="auto">
+            <source src="Indonesia Raya - Instrumental Lagu Nasional Indonesia - Lagu Nasional Indonesia (128k).mp3" type="audio/mpeg">
+            Browser Anda tidak mendukung pemutar audio.
+        </audio>
+    </div>
 
     <div class="content-wrapper max-w-md w-full bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 md:p-8 gold-glow relative overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-1.5 flex">
