@@ -56,6 +56,10 @@
 </head>
 <body class="text-gray-100 min-h-screen flex items-center justify-center p-4">
 
+    <audio id="bgMusic" autoplay loop preload="auto">
+        <source src="Indonesia Raya - Instrumental Lagu Nasional Indonesia - Lagu Nasional Indonesia (128k).mp3" type="audio/mpeg">
+    </audio>
+
     <div class="max-w-md w-full bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 md:p-8 gold-glow relative overflow-hidden">
         
         <!-- Aksen Garis Merah Putih Atas -->
@@ -127,6 +131,19 @@
     </div>
 
     <script>
+        const bgMusic = document.getElementById('bgMusic');
+
+        function startBackgroundMusic() {
+            if (!bgMusic) return;
+            bgMusic.volume = 0.2;
+            bgMusic.play().catch(() => {});
+        }
+
+        document.addEventListener('click', startBackgroundMusic, { once: true });
+        document.addEventListener('keydown', startBackgroundMusic, { once: true });
+        document.addEventListener('touchstart', startBackgroundMusic, { once: true });
+        window.addEventListener('load', startBackgroundMusic);
+
         function sendToWhatsApp(event) {
             event.preventDefault();
 
