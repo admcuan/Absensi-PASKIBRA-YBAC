@@ -81,31 +81,30 @@
             z-index: 10;
         }
 
-        .audio-player {
+        .audio-toggle {
             position: fixed;
             bottom: 1rem;
             right: 1rem;
-            z-index: 30;
-            background: rgba(0, 0, 0, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 1rem;
-            padding: 0.75rem 1rem;
-            backdrop-filter: blur(10px);
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
         }
 
-        .audio-player audio {
-            width: 220px;
-        }
+        .audio-toggle.hidden { display: none; }
+
+        .audio-toggle svg { width: 18px; height: 18px; fill: currentColor; }
 
         @media (max-width: 640px) {
-            .audio-player {
-                right: 0.75rem;
-                left: 0.75rem;
-            }
-
-            .audio-player audio {
-                width: 100%;
-            }
+            .audio-toggle { right: 0.75rem; left: 0.75rem; justify-content: center; }
         }
     </style>
 </head>
@@ -118,12 +117,16 @@
     </div>
     <div class="video-overlay"></div>
 
-    <div class="audio-background">
-        <audio id="bgAudio" autoplay loop preload="auto" hidden>
-    <source src="Instrumental Lagu Nasional Indonesia.mp3" type="audio/mpeg">
-            
-        </audio>
-    </div>
+    <!-- Audio: start muted (improves autoplay chances), provide toggle for unmute -->
+    <audio id="bgAudio" autoplay muted loop preload="auto" playsinline>
+        <source src="Instrumental Lagu Nasional Indonesia.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung pemutar audio.
+    </audio>
+
+    <button id="audioToggle" class="audio-toggle hidden" aria-label="Aktifkan suara">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 5V5L7 10H3z"></path><path d="M16.5 12c0-1.77-.77-3.36-1.97-4.44l-1.43 1.43A5.493 5.493 0 0 1 15 12c0 1.38-.51 2.63-1.33 3.57l1.43 1.43C15.73 15.36 16.5 13.77 16.5 12z"></path></svg>
+        Aktifkan Suara
+    </button>
 
     <div class="content-wrapper max-w-md w-full bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 md:p-8 gold-glow relative overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-1.5 flex">
@@ -177,6 +180,59 @@
     </div>
 
     <script>
+        // Coba autoplay saat load. Jika browser memblokir, tampilkan tombol untuk mengaktifkan suara.
+        window.addEventListener('load', async () => {
+            const bgAudio = document.getElementById('bgAudio');
+            const audioToggle = document.getElementById('audioToggle');
+
+            if (!bgAudio) return;
+
+            // Pastikan audio di-mute untuk memaksimalkan peluang autoplay bekerja
+            bgAudio.muted = true;
+
+            try {
+                await bgAudio.play();
+                // Jika autoplay berhasil tapi masih muted, tunjukkan tombol untuk meng-unmute
+                if (bgAudio.muted) {
+                    audioToggle.classList.remove('hidden');
+                }
+            } catch (err) {
+                // Jika play() ditolak, tampilkan tombol untuk men-trigger pemutaran
+                audioToggle.classList.remove('hidden');
+            }
+
+            // Klik tombol -> meng-unmute dan play
+            audioToggle.addEventListener('click', async () => {
+                try {
+                    bgAudio.muted = false;
+                    await bgAudio.play();
+                    audioToggle.classList.add('hidden');
+                } catch (err) {
+                    // jika masih gagal, pastikan tombol tetap terlihat agar pengguna mencoba lagi
+                    audioToggle.classList.remove('hidden');
+                }
+            });
+
+            // sembunyikan tombol bila pengguna berinteraksi di halaman (tap/click) — sebagai fallback
+            const onUserInteract = async () => {
+                if (bgAudio.muted) {
+                    try {
+                        bgAudio.muted = false;
+                        await bgAudio.play();
+                        audioToggle.classList.add('hidden');
+                    } catch (e) {
+                        audioToggle.classList.remove('hidden');
+                    }
+                } else {
+                    audioToggle.classList.add('hidden');
+                }
+                document.removeEventListener('click', onUserInteract);
+                document.removeEventListener('touchstart', onUserInteract);
+            };
+            document.addEventListener('click', onUserInteract, { once: true });
+            document.addEventListener('touchstart', onUserInteract, { once: true });
+        });
+
         function sendToWhatsApp(event) {
             event.preventDefault();
             const nama = document.getElementById('nama').value.trim();
@@ -190,7 +246,7 @@
             const targetPhone = '6283874795123';
             const statusEmoji = status === 'Hadir' ? '✅' : status === 'Izin' ? '📝' : '🩺';
             const statusLabel = status === 'Hadir' ? 'HADIR' : status === 'Izin' ? 'IZIN' : 'SAKIT';
-            const message = `*ABSENSI PASKIBRA YBAC*\n=======================================\n📅 *Hari/Tanggal:* ${tanggalStr}\n⏰ *Waktu:* ${jamStr}\n\n👤 *Nama Lengkap:* ${nama}\n🏫 *Kelas/Angkatan:* ${kelas}\n${statusEmoji} *Status Kehadiran:* ${statusLabel}\n📝 *Keterangan:* ${keterangan}\n\n📌 *Ringkasan:*\n- Nama: ${nama}\n- Kelas/Angkatan: ${kelas}\n- Status: ${status}\n- Catatan: ${keterangan}\n- Waktu presensi: ${jamStr}\n\n=======================================\n_Dikirim otomatis melalui sistem presensi online Paskibra YBAC._`;
+            const message = `*ABSENSI PASKIBRA YBAC*\\n=======================================\\n📅 *Hari/Tanggal:* ${tanggalStr}\\n⏰ *Waktu:* ${jamStr}\\n\\n👤 *Nama Lengkap:* ${nama}\\n🏫 *Kelas/Angkatan:* ${kelas}\\n${statusEmoji} *Status Kehadiran:* ${statusLabel}\\n📝 *Keterangan:* ${keterangan}\\n\\n📌 *Ringkasan:*\\n- Nama: ${nama}\\n- Kelas/Angkatan: ${kelas}\\n- Status: ${status}\\n- Catatan: ${keterangan}\\n- Waktu presensi: ${jamStr}\\n\\n=======================================\\n_Dikirim otomatis melalui sistem presensi online Paskibra YBAC._`;
             const encodedMessage = encodeURIComponent(message);
             const waUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
             window.open(waUrl, '_blank');
